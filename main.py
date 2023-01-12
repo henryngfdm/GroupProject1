@@ -25,8 +25,9 @@ def call():
     collection_name = dbname["opportunites"]
     item_details = collection_name.find()
     items_df = pd.DataFrame(item_details)
+    items_df.replace({'NULL':"NA"}, inplace=True)
     items_df = items_df.drop(columns=['_id'])
-    return items_df.head(4).to_json()
+    return items_df.head(4).to_json(force_ascii=True)
 
 if __name__ == "__main__":
     app.run(debug=True)
