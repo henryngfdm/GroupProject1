@@ -1,19 +1,9 @@
 from flask import Flask, render_template
 from pymongo import MongoClient
-import pandas as pd
+from datetime import datetime
+import json
 
 app = Flask(__name__)
-
-def get_database():
- 
-   # Provide the mongodb atlas url to connect python to mongodb using pymongo
-   CONNECTION_STRING = "mongodb://127.0.0.1:27017/?directConnection=true&serverSelectionTimeoutMS=2000&appName=mongosh+1.6.2"
- 
-   # Create a connection using MongoClient. You can import MongoClient or use pymongo.MongoClient
-   client = MongoClient(CONNECTION_STRING)
- 
-   # Create the database for our example (we will use the same database throu oghout the tutorial
-   return client['project1']
 
 @app.route("/")
 def home():
@@ -21,13 +11,33 @@ def home():
 
 @app.route("/get")
 def call():
-    dbname = get_database()
-    collection_name = dbname["opportunites"]
-    item_details = collection_name.find()
-    items_df = pd.DataFrame(item_details)
-    items_df.replace({'NULL':"NA"}, inplace=True)
-    items_df = items_df.drop(columns=['_id'])
-    return items_df.head(4).to_json(force_ascii=True)
+    # Provide the mongodb atlas url to connect python to mongodb using pymongo
+    CONNECTION_STRING = "mongodb://127.0.0.1:27017/?directConnection=true&serverSelectionTimeoutMS=2000&appName=mongosh+1.6.2"
+
+    # Create a connection using MongoClient. You can import MongoClient or use pymongo.MongoClient
+    client = MongoClient(CONNECTION_STRING)
+
+    # Create the database for our example (we will use the same database throu oghout the tutorial
+    cursor = client['project1']['opportunites2'].aggregate([
+        {
+            '$sort': {
+                'last_call': 1
+            }
+        }, {
+            '$limit': 4
+        }
+    ])
+    dt = datetime.now()
+    ts = datetime.timestamp(dt)
+
+    cursor = list(cursor)
+    for i in cursor:
+        # for char in ['Australian','Ltd','Pty', 'of', 'Australia', 'Services']:
+        #     i['client'] = i['client'].replace(char,'').strip()
+        client['project1']['opportunites2'].update_one({ '_id': i['_id'] }, { "$set": { 'last_call': int(ts) } })
+        i.pop('_id', None)
+        print(i)
+    return json.dumps([dict(i) for i in cursor])
 
 if __name__ == "__main__":
     app.run(debug=True)
