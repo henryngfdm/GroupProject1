@@ -24,7 +24,7 @@
   </style>
 </head>
 
-<body class="d-flex flex-column min-vh-100 justify-content-center align-items-center p-3">
+<body class="d-flex flex-column min-vh-100 justify-content-center align-items-center p-3" onload="updateCards()">
   <h1 class="text-white">FDM Opportunities</h1>
   <div class="row row-cols-md-2 g-4 mx-2">
     <div class="col">
@@ -35,7 +35,7 @@
         <div class="card-body">
           <div class="row">
             <div class="mb-2 d-flex flex-column justify-content-center align-items-center" style="width:150px;">
-              <img class="ms-3" src="./commbank.png" style="width:140px;height:140px;" alt="logo">
+              <img class="ms-3" src="./static/commbank.png" style="width:140px;height:140px;" alt="logo">
             </div>
             <div class="col">
               <div class="card mx-1">
@@ -100,7 +100,7 @@
         <div class="card-body">
           <div class="row">
             <div class="mb-2 d-flex flex-column justify-content-center align-items-center" style="width:150px;">
-              <img class="ms-3" src="./commbank.png" style="width:140px;height:140px;" alt="logo">
+              <img class="ms-3" src="./static/commbank.png" style="width:140px;height:140px;" alt="logo">
             </div>
             <div class="col">
               <div class="card mx-1">
@@ -164,7 +164,7 @@
         <div class="card-body">
           <div class="row">
             <div class="mb-2 d-flex flex-column justify-content-center align-items-center" style="width:150px;">
-              <img class="ms-3" src="./commbank.png" style="width:140px;height:140px;" alt="logo">
+              <img class="ms-3" src="./static/commbank.png" style="width:140px;height:140px;" alt="logo">
             </div>
             <div class="col">
               <div class="card mx-1">
@@ -228,7 +228,7 @@
         <div class="card-body">
           <div class="row">
             <div class="mb-2 d-flex flex-column justify-content-center align-items-center" style="width:150px;">
-              <img class="ms-3" src="./commbank.png" style="width:140px;height:140px;" alt="logo">
+              <img class="ms-3" src="./static/commbank.png" style="width:140px;height:140px;" alt="logo">
             </div>
             <div class="col">
               <div class="card mx-1">
@@ -286,7 +286,27 @@
     </div>
   </div>
   <script>
+    var accManagerFields = document.querySelectorAll("h3 > b");
+    var otherFields = document.querySelectorAll(".card-text");
+    setInterval(updateCards, 20000)
 
+    async function updateCards() {
+      try {
+        const response = await fetch('http://127.0.0.1:5000/get')
+        const data = await response.json();
+        for (let i = 0; i < 4; i++) {
+          accManagerFields[i].innerHTML = data[i].account_manager;
+          var start = i * 5
+          otherFields[start].innerHTML = data[i].classification;
+          otherFields[start + 1].innerHTML = data[i].client;
+          otherFields[start + 2].innerHTML = data[i].department;
+          otherFields[start + 3].innerHTML = data[i].industry;
+          otherFields[start + 4].innerHTML = data[i].country;
+        }
+      } catch (error) {
+        console.error(error);
+      }
+    }
   </script>
 </body>
 
