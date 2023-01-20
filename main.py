@@ -18,7 +18,7 @@ def call():
     client = MongoClient(CONNECTION_STRING)
 
     # Create the database for our example (we will use the same database throu oghout the tutorial
-    cursor = client['project1']['opportunites2'].aggregate([
+    cursor = client['project1']['opportunities2'].aggregate([
         {
             '$sort': {
                 'last_call': 1
@@ -32,9 +32,7 @@ def call():
 
     cursor = list(cursor)
     for i in cursor:
-        # for char in ['Australian','Ltd','Pty', 'of', 'Australia', 'Services']:
-        #     i['client'] = i['client'].replace(char,'').strip()
-        client['project1']['opportunites2'].update_one({ '_id': i['_id'] }, { "$set": { 'last_call': int(ts) } })
+        client['project1']['opportunities2'].update_one({ '_id': i['_id'] }, { "$set": { 'last_call': int(ts) } })
         i.pop('_id', None)
         print(i)
     return json.dumps([dict(i) for i in cursor])
