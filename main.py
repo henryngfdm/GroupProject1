@@ -34,7 +34,10 @@ def call():
     for i in cursor:
         client['project1']['opportunities2'].update_one({ '_id': i['_id'] }, { "$set": { 'last_call': int(ts) } })
         i.pop('_id', None)
-        print(i)
+        for key, value in i.items():
+            if value == "NULL":
+                i[key] = "N/A"
+        # print(i)
     return json.dumps([dict(i) for i in cursor])
 
 if __name__ == "__main__":
